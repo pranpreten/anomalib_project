@@ -20,9 +20,9 @@ def main():
     datamodule = Folder(
         name="chest_xray_patchcore",
         root="../dataset_original",                # dataset/ 아래에 train/test 폴더 있는 구조
-        normal_dir="train/normal_5k",       # 학습용 정상
-        abnormal_dir="test/abnormal_3k",    # 비정상은 전부 test 용
-        normal_test_dir="test/normal_3k",   # 정상 테스트 이미지
+        normal_dir="train/roi_normal_5k",       # 학습용 정상
+        abnormal_dir="test/roi_abnormal_3k",    # 비정상은 전부 test 용
+        normal_test_dir="test/roi_normal_3k",   # 정상 테스트 이미지
         train_batch_size=2,    
         eval_batch_size=2,     
         num_workers=2,    
@@ -39,7 +39,7 @@ def main():
         backbone="resnet18",      # 기본 백본
         layers=("layer2", "layer3"),     # 논문 기본 조합
         pre_trained=True,                # ImageNet 사전학습 사용
-        coreset_sampling_ratio=0.01,     # 메모리 뱅크 샘플링 비율 (처음은 0.1로)
+        coreset_sampling_ratio=0.05,     # 메모리 뱅크 샘플링 비율 (처음은 0.1로)
         num_neighbors=9,                 # 기본 9-NN
         pre_processor=pre_processor
 
