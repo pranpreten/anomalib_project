@@ -4,7 +4,9 @@ from anomalib.data import Folder
 from anomalib.models import Patchcore
 from anomalib.engine import Engine
 from anomalib.pre_processing import PreProcessor
-from torchvision.transforms.v2 import Compose, Normalize, Resize
+from torchvision.transforms.v2 import Compose, Normalize, Resize, CenterCrop,ToDtype
+import torch
+
 
 
 def main():
@@ -13,16 +15,18 @@ def main():
     # ---------------------------------------------------
 
     transform = Compose([
-        Resize((224, 224)),
-        Normalize(mean=[0.43, 0.48, 0.45], std=[0.23, 0.22, 0.25]),
+        Resize((256, 256)),
+        ToDtype(torch.float32, scale=True),
+        Normalize(mean=[0.5, 0.5, 0.5],
+                std=[0.25, 0.25, 0.25]),
     ])
     pre_processor = PreProcessor(transform=transform)
     datamodule = Folder(
         name="chest_xray_patchcore",
-        root="../dataset_original",                # dataset/ 아래에 train/test 폴더 있는 구조
-        normal_dir="train/roi_normal_5k",       # 학습용 정상
-        abnormal_dir="test/roi_abnormal_3k",    # 비정상은 전부 test 용
-        normal_test_dir="test/roi_normal_3k",   # 정상 테스트 이미지
+        root="../final_dataset",                # dataset/ 아래에 train/test 폴더 있는 구조
+        normal_dir="train/normal_patch",
+        abnormal_dir="test/abnormal_card",
+        normal_test_dir="test/normal_patch",
         train_batch_size=2,    
         eval_batch_size=2,     
         num_workers=2,    
@@ -36,10 +40,11 @@ def main():
     # 3. PatchCore 모델 정의 (기본 하이퍼파라로 시작)
     # ---------------------------------------------------
     model = Patchcore(
-        backbone="resnet18",      # 기본 백본
+        backbone="wide_resnet50_2",      
+        # backbone="resnet34",      
         layers=("layer2", "layer3"),     # 논문 기본 조합
         pre_trained=True,                # ImageNet 사전학습 사용
-        coreset_sampling_ratio=0.05,     # 메모리 뱅크 샘플링 비율 (처음은 0.1로)
+        coreset_sampling_ratio=0.01,     # 메모리 뱅크 샘플링 비율 (처음은 0.1로)
         num_neighbors=9,                 # 기본 9-NN
         pre_processor=pre_processor
 

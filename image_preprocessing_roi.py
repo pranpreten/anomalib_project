@@ -7,23 +7,20 @@ from tqdm import tqdm
 # ========================
 def crop_roi(img):
     """NIH X-ray 형태 기준 ROI 크롭"""
-
     H, W = img.shape[:2]
-
-    # NIH X-ray 표준 비율 기반
     top = int(H * 0.10)
     bottom = int(H * 0.90)
     left = int(W * 0.15)
     right = int(W * 0.85)
-
     return img[top:bottom, left:right]
 
 
 # ========================
-# CROP ONE DIRECTORY
+# ONE DIRECTORY CROP
 # ========================
 def crop_folder(src_dir, dst_dir):
     os.makedirs(dst_dir, exist_ok=True)
+
     files = [
         f for f in os.listdir(src_dir)
         if f.lower().endswith((".jpg", ".jpeg", ".png"))
@@ -45,17 +42,15 @@ def crop_folder(src_dir, dst_dir):
 
 
 # ========================
-# MAIN PIPELINE
+# MAIN
 # ========================
 def main():
-    # 너 작업 경로 기준
-    ROOT = "./dataset_original"
+    ROOT = "./final_dataset"
 
-    # (src_rel, dst_rel)
     paths = [
-        ("train/normal_5k",      "train/roi_normal_5k"),
-        ("test/normal_3k",       "test/roi_normal_3k"),
-        ("test/abnormal_3k",     "test/roi_abnormal_3k"),
+        ("train/normal",       "train/normal_roi"),
+        ("test/normal",        "test/normal_roi"),
+        ("test/abnormal",      "test/abnormal_roi"),
     ]
 
     for src_rel, dst_rel in paths:
@@ -68,7 +63,7 @@ def main():
 
         crop_folder(src_dir, dst_dir)
 
-    print("\n🎉 완료! 크롭된 ROI 이미지는 dataset_original/ 안의 roi_* 폴더들에 저장됨.")
+    print("\n🎉 ROI 크롭 완료! final_dataset 안에 *_roi 폴더 생성됨.")
 
 
 if __name__ == "__main__":
